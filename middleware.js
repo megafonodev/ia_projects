@@ -26,15 +26,20 @@ async function verifyToken(token, secret) {
 }
 
 export async function middleware(request) {
-  const token = request.cookies.get(COOKIE_NAME)?.value
-  const isValid = await verifyToken(token, process.env.COOKIE_SECRET)
+  try {
+    const token = request.cookies.get(COOKIE_NAME)?.value
+    const isValid = await verifyToken(token, process.env.COOKIE_SECRET)
 
-  if (!isValid) {
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
+    if (!isValid) {
+      const loginUrl = new URL('/login', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    return NextResponse.next()
+  } catch (err) {
+    console.error('middleware error:', err)
+    return NextResponse.redirect(new URL('/login', request.url))
   }
-
-  return NextResponse.next()
 }
 
 export const config = {
