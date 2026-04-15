@@ -26,14 +26,6 @@ async function verifyToken(token, secret) {
 }
 
 export async function proxy(request) {
-  const token = request.cookies.get(COOKIE_NAME)?.value
-  const isValid = await verifyToken(token, process.env.COOKIE_SECRET)
-
-  if (!isValid) {
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
-  }
-
   return NextResponse.next()
 }
 
