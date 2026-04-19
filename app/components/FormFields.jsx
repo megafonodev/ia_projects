@@ -1,8 +1,10 @@
 import { FieldGroup, TextInput, TextArea, Select, PillSelector, NumberStepper } from "./FormControls";
 import FileUpload from "./FileUpload";
-import { ASPECT_RATIOS, PLATFORMS, DURATIONS, IMAGE_SIZES } from "./constants";
+import { PLATFORMS, DURATIONS, IMAGE_SIZES, getAspectRatiosForPlatform } from "./constants";
 
 export default function FormFields({ mode, form, set, onFileChange, onClearFile }) {
+  const availableAspectRatios = getAspectRatiosForPlatform(form.platform);
+
   return (
     <div key={mode} className="grid gap-6 sm:grid-cols-2">
       {/* Campaign name */}
@@ -95,14 +97,14 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile 
           value={form.numberOfOutputs}
           onChange={set("numberOfOutputs")}
           min={1}
-          max={10}
+          max={mode === "image" ? 4 : 10}
         />
       </FieldGroup>
 
       {/* Aspect ratio */}
       <FieldGroup label="Proporción de aspecto" htmlFor="aspectRatio" required delay={210}>
         <PillSelector
-          options={ASPECT_RATIOS}
+          options={availableAspectRatios}
           value={form.aspectRatio}
           onChange={set("aspectRatio")}
         />

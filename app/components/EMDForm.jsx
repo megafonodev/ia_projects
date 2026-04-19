@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { INITIAL_STATE, fileToBase64 } from "./constants";
+import { useEffect, useState } from "react";
+import { INITIAL_STATE, fileToBase64, getAspectRatiosForPlatform } from "./constants";
 import { submitForm } from "../api/webhook";
 import ModeToggle from "./ModeToggle";
 import FormFields from "./FormFields";
 import SuccessScreen from "./SuccessScreen";
+
+const IMAGE_MAX_OUTPUTS = 4;
 
 export default function EMDForm() {
   const [mode, setMode] = useState("image");
@@ -14,9 +16,41 @@ export default function EMDForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (mode !== "image") return;
+    setForm((prev) =>
+      prev.numberOfOutputs > IMAGE_MAX_OUTPUTS
+        ? { ...prev, numberOfOutputs: IMAGE_MAX_OUTPUTS }
+        : prev
+    );
+  }, [mode]);
+
   const set = (field) => (e) => {
     const value = e?.target ? e.target.value : e;
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => {
+      if (field === "numberOfOutputs") {
+        const nextValue = Number(value);
+        if (Number.isNaN(nextValue)) return prev;
+        return {
+          ...prev,
+          numberOfOutputs:
+            mode === "image"
+              ? Math.min(IMAGE_MAX_OUTPUTS, nextValue)
+              : nextValue,
+        };
+      }
+
+      if (field !== "platform") {
+        return { ...prev, [field]: value };
+      }
+
+      const availableAspectRatios = getAspectRatiosForPlatform(value);
+      const aspectRatio = availableAspectRatios.includes(prev.aspectRatio)
+        ? prev.aspectRatio
+        : availableAspectRatios[0];
+
+      return { ...prev, platform: value, aspectRatio };
+    });
   };
 
   const handleFileChange = async (file) => {

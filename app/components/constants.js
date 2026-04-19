@@ -1,5 +1,6 @@
 export const ASPECT_RATIOS = [
   "1:1",
+  "1.91:1",
   "2:3",
   "3:2",
   "3:4",
@@ -13,12 +14,22 @@ export const ASPECT_RATIOS = [
 export const PLATFORMS = [
   "Instagram",
   "Facebook",
-  "LinkedIn",
   "TikTok",
-  "X",
-  "YouTube",
-  "Otra",
+  "LinkedIn",
+  "Twitter",
 ];
+
+export const PLATFORM_ASPECT_RATIOS = {
+  Instagram: ["1:1", "1.91:1", "4:5", "9:16"],
+  Facebook: ["1:1", "1.91:1", "4:5", "9:16"],
+  TikTok: ["1:1", "4:5", "9:16", "16:9"],
+  LinkedIn: ["1:1", "1.91:1", "4:5"],
+  Twitter: ["1:1", "1.91:1", "9:16", "16:9"],
+};
+
+export function getAspectRatiosForPlatform(platform) {
+  return PLATFORM_ASPECT_RATIOS[platform] ?? ASPECT_RATIOS;
+}
 export const DURATIONS = ["5s", "10s", "15s", "30s", "60s"];
 export const IMAGE_SIZES = ["1K", "2K", "4K"];
 
