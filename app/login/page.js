@@ -68,13 +68,6 @@ export default function LoginPage() {
         <div className="rounded-2xl border border-[var(--emd-border)] bg-[var(--emd-dark)]/60 p-8 shadow-2xl shadow-black/30 backdrop-blur-sm">
           {/* Header */}
           <div className="mb-8 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--emd-border)] bg-[var(--emd-surface)] px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-[var(--emd-text-muted)]">
-              <span
-                className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--emd-primary)]"
-                style={{ boxShadow: '0 0 6px var(--emd-primary)' }}
-              />
-              Acceso restringido
-            </div>
             <h1 className="text-2xl font-bold tracking-tight text-[var(--emd-text)]">
               Iniciar{' '}
               <span className="bg-gradient-to-r from-[var(--emd-primary)] to-[var(--emd-secondary)] bg-clip-text text-transparent">
