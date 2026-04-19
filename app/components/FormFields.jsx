@@ -1,9 +1,18 @@
 import { FieldGroup, TextInput, TextArea, Select, PillSelector, NumberStepper } from "./FormControls";
 import FileUpload from "./FileUpload";
-import { PLATFORMS, DURATIONS, IMAGE_SIZES, getAspectRatiosForPlatform } from "./constants";
+import {
+  PLATFORMS,
+  DURATIONS,
+  IMAGE_SIZES,
+  VIDEO_ASPECT_RATIOS,
+  getAspectRatiosForPlatform,
+} from "./constants";
 
 export default function FormFields({ mode, form, set, onFileChange, onClearFile }) {
-  const availableAspectRatios = getAspectRatiosForPlatform(form.platform);
+  const availableAspectRatios =
+    mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
+  const availableDurations =
+    mode === "video" && form.referenceImage ? ["8s"] : DURATIONS;
 
   return (
     <div key={mode} className="grid gap-6 sm:grid-cols-2">
@@ -61,6 +70,9 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile 
             onFileChange={onFileChange}
             onClear={onClearFile}
           />
+          <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
+            Tamaño máximo: 20 MB.
+          </p>
         </FieldGroup>
       </div>
 
@@ -69,10 +81,15 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile 
         <>
           <FieldGroup label="Duración" htmlFor="duration" required delay={140}>
             <PillSelector
-              options={DURATIONS}
+              options={availableDurations}
               value={form.duration}
               onChange={set("duration")}
             />
+            {form.referenceImage && (
+              <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
+                Con imagen de referencia, la duración se fija en 8s.
+              </p>
+            )}
           </FieldGroup>
 
           <FieldGroup label="Resolución" htmlFor="imageSize" required delay={160}>
@@ -81,6 +98,9 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile 
               value={form.imageSize}
               onChange={set("imageSize")}
             />
+            <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
+              Velocidad nativa: 24 FPS. Formato de salida: video/mp4.
+            </p>
           </FieldGroup>
         </>
       )}
@@ -97,7 +117,7 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile 
           value={form.numberOfOutputs}
           onChange={set("numberOfOutputs")}
           min={1}
-          max={mode === "image" ? 4 : 10}
+          max={4}
         />
       </FieldGroup>
 

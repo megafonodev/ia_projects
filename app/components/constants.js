@@ -11,6 +11,7 @@ export const ASPECT_RATIOS = [
   "16:9",
   "21:9",
 ];
+export const VIDEO_ASPECT_RATIOS = ["16:9", "9:16"];
 export const PLATFORMS = [
   "Instagram",
   "Facebook",
@@ -30,8 +31,8 @@ export const PLATFORM_ASPECT_RATIOS = {
 export function getAspectRatiosForPlatform(platform) {
   return PLATFORM_ASPECT_RATIOS[platform] ?? ASPECT_RATIOS;
 }
-export const DURATIONS = ["5s", "10s", "15s", "30s", "60s"];
-export const IMAGE_SIZES = ["1K", "2K", "4K"];
+export const DURATIONS = ["4s", "6s", "8s"];
+export const IMAGE_SIZES = ["720p", "1080p"];
 
 export const INITIAL_STATE = {
   campaignName: "",
@@ -48,8 +49,8 @@ export const INITIAL_STATE = {
   hexColors: "",
   requiredElements: "",
   restrictions: "",
-  duration: "10s",
-  imageSize: "1K",
+  duration: "6s",
+  imageSize: "1080p",
 };
 
 export function fileToBase64(file) {

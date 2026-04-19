@@ -20,8 +20,10 @@ export function buildPayload(mode, form) {
   };
 
   if (mode === "video") {
-    payload.duration = form.duration;
+    payload.duration = form.referenceImage ? "8s" : form.duration;
     payload.imageSize = form.imageSize;
+    payload.frameRate = 24;
+    payload.outputFormat = "video/mp4";
   }
 
   return payload;

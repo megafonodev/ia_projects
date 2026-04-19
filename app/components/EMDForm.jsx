@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { INITIAL_STATE, fileToBase64, getAspectRatiosForPlatform } from "./constants";
+import {
+  INITIAL_STATE,
+  VIDEO_ASPECT_RATIOS,
+  fileToBase64,
+  getAspectRatiosForPlatform,
+} from "./constants";
 import { submitForm } from "../api/webhook";
 import ModeToggle from "./ModeToggle";
 import FormFields from "./FormFields";
 import SuccessScreen from "./SuccessScreen";
 
-const IMAGE_MAX_OUTPUTS = 4;
+const MAX_OUTPUTS = 4;
+const REFERENCE_IMAGE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
 export default function EMDForm() {
   const [mode, setMode] = useState("image");
@@ -17,12 +23,32 @@ export default function EMDForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (mode !== "image") return;
-    setForm((prev) =>
-      prev.numberOfOutputs > IMAGE_MAX_OUTPUTS
-        ? { ...prev, numberOfOutputs: IMAGE_MAX_OUTPUTS }
-        : prev
-    );
+    setForm((prev) => {
+      const next = { ...prev };
+      let changed = false;
+
+      if (next.numberOfOutputs > MAX_OUTPUTS) {
+        next.numberOfOutputs = MAX_OUTPUTS;
+        changed = true;
+      }
+
+      const validAspectRatios =
+        mode === "video"
+          ? VIDEO_ASPECT_RATIOS
+          : getAspectRatiosForPlatform(next.platform);
+
+      if (!validAspectRatios.includes(next.aspectRatio)) {
+        next.aspectRatio = validAspectRatios[0];
+        changed = true;
+      }
+
+      if (mode === "video" && next.referenceImage && next.duration !== "8s") {
+        next.duration = "8s";
+        changed = true;
+      }
+
+      return changed ? next : prev;
+    });
   }, [mode]);
 
   const set = (field) => (e) => {
@@ -33,32 +59,59 @@ export default function EMDForm() {
         if (Number.isNaN(nextValue)) return prev;
         return {
           ...prev,
-          numberOfOutputs:
-            mode === "image"
-              ? Math.min(IMAGE_MAX_OUTPUTS, nextValue)
-              : nextValue,
+          numberOfOutputs: Math.min(MAX_OUTPUTS, nextValue),
         };
       }
 
-      if (field !== "platform") {
+      if (field === "duration" && mode === "video" && prev.referenceImage) {
+        return { ...prev, duration: "8s" };
+      }
+
+      if (field === "platform") {
+        if (mode === "video") {
+          const aspectRatio = VIDEO_ASPECT_RATIOS.includes(prev.aspectRatio)
+            ? prev.aspectRatio
+            : VIDEO_ASPECT_RATIOS[0];
+          return { ...prev, platform: value, aspectRatio };
+        }
+
+        const availableAspectRatios = getAspectRatiosForPlatform(value);
+        const aspectRatio = availableAspectRatios.includes(prev.aspectRatio)
+          ? prev.aspectRatio
+          : availableAspectRatios[0];
+        return { ...prev, platform: value, aspectRatio };
+      }
+
+      if (field !== "aspectRatio") {
         return { ...prev, [field]: value };
       }
 
-      const availableAspectRatios = getAspectRatiosForPlatform(value);
-      const aspectRatio = availableAspectRatios.includes(prev.aspectRatio)
-        ? prev.aspectRatio
-        : availableAspectRatios[0];
-
-      return { ...prev, platform: value, aspectRatio };
+      const validAspectRatios =
+        mode === "video"
+          ? VIDEO_ASPECT_RATIOS
+          : getAspectRatiosForPlatform(prev.platform);
+      return validAspectRatios.includes(value)
+        ? { ...prev, aspectRatio: value }
+        : prev;
     });
   };
 
   const handleFileChange = async (file) => {
+    if (file.size > REFERENCE_IMAGE_MAX_SIZE_BYTES) {
+      setError("La imagen de referencia no puede superar 20 MB.");
+      return;
+    }
+
     const base64 = await fileToBase64(file);
+    setError("");
     setForm((prev) => ({
       ...prev,
       referenceImage: base64,
       referenceImageName: file.name,
+      duration:
+        mode === "video"
+          ? "8s"
+          : prev.duration,
     }));
   };
 
