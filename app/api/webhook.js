@@ -1,9 +1,9 @@
 /**
  * Builds the payload from form state + mode.
  */
-export function buildPayload(mode, form) {
-  const payload = {
-    mode,
+function buildImagePayload(form) {
+  return {
+    mode: "image",
     campaignName: form.campaignName,
     product: form.product,
     objective: form.objective,
@@ -18,15 +18,37 @@ export function buildPayload(mode, form) {
     requiredElements: form.requiredElements,
     restrictions: form.restrictions,
   };
+}
 
-  if (mode === "video") {
-    payload.duration = form.referenceImage ? "8s" : form.duration;
-    payload.imageSize = form.imageSize;
-    payload.frameRate = 24;
-    payload.outputFormat = "video/mp4";
-  }
+function buildVideoPayload(form) {
+  return {
+    mode: "video",
+    campaignName: form.campaignName,
+    product: form.product,
+    objective: form.objective,
+    platform: form.platform,
+    audience: form.audience,
+    mainMessage: form.mainMessage,
+    valueProp: form.valueProp,
+    hexColors: form.hexColors,
+    requiredElements: form.requiredElements,
+    restrictions: form.restrictions,
+    referenceImage: form.referenceImage,
+    video: {
+      numberOfOutputs: form.numberOfOutputs,
+      aspectRatio: form.aspectRatio,
+      duration: form.referenceImage ? "8s" : form.duration,
+      resolution: form.imageSize,
+      frameRate: 24,
+      outputFormat: "video/mp4",
+    },
+  };
+}
 
-  return payload;
+export function buildPayload(mode, form) {
+  return mode === "video"
+    ? buildVideoPayload(form)
+    : buildImagePayload(form);
 }
 
 /**
