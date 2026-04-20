@@ -13,6 +13,7 @@ import FormFields from "./FormFields";
 import SuccessScreen from "./SuccessScreen";
 
 const MAX_OUTPUTS = 4;
+const VIDEO_MAX_OUTPUTS = 1;
 const REFERENCE_IMAGE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
 export default function EMDForm() {
@@ -22,13 +23,17 @@ export default function EMDForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
+  const getMaxOutputsForMode = (currentMode) =>
+    currentMode === "video" ? VIDEO_MAX_OUTPUTS : MAX_OUTPUTS;
+
   useEffect(() => {
     setForm((prev) => {
       const next = { ...prev };
       let changed = false;
 
-      if (next.numberOfOutputs > MAX_OUTPUTS) {
-        next.numberOfOutputs = MAX_OUTPUTS;
+      const maxOutputs = getMaxOutputsForMode(mode);
+      if (next.numberOfOutputs > maxOutputs) {
+        next.numberOfOutputs = maxOutputs;
         changed = true;
       }
 
@@ -57,9 +62,10 @@ export default function EMDForm() {
       if (field === "numberOfOutputs") {
         const nextValue = Number(value);
         if (Number.isNaN(nextValue)) return prev;
+        const maxOutputs = getMaxOutputsForMode(mode);
         return {
           ...prev,
-          numberOfOutputs: Math.min(MAX_OUTPUTS, nextValue),
+          numberOfOutputs: Math.min(maxOutputs, nextValue),
         };
       }
 
@@ -155,6 +161,7 @@ export default function EMDForm() {
         set={set}
         onFileChange={handleFileChange}
         onClearFile={handleClearFile}
+        maxOutputs={getMaxOutputsForMode(mode)}
       />
 
       {/* Error */}

@@ -43,7 +43,7 @@ function buildVideoPayload(form) {
     restrictions: form.restrictions,
     referenceImage: form.referenceImage,
     video: {
-      numberOfOutputs: form.numberOfOutputs,
+      numberOfOutputs: 1,
       aspectRatio: form.aspectRatio,
       duration: toDurationInt(form.referenceImage ? "8s" : form.duration),
       resolution: form.imageSize,

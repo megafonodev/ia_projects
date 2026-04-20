@@ -8,7 +8,7 @@ import {
   getAspectRatiosForPlatform,
 } from "./constants";
 
-export default function FormFields({ mode, form, set, onFileChange, onClearFile }) {
+export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs }) {
   const availableAspectRatios =
     mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
   const availableDurations =
@@ -117,7 +117,7 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile 
           value={form.numberOfOutputs}
           onChange={set("numberOfOutputs")}
           min={1}
-          max={4}
+          max={maxOutputs}
         />
       </FieldGroup>
 
