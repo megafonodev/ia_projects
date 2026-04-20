@@ -32,7 +32,7 @@ export function getAspectRatiosForPlatform(platform) {
   return PLATFORM_ASPECT_RATIOS[platform] ?? ASPECT_RATIOS;
 }
 export const DURATIONS = ["4s", "6s", "8s"];
-export const IMAGE_SIZES = ["720p", "1080p"];
+export const IMAGE_SIZES = ["720p"];
 
 export const INITIAL_STATE = {
   campaignName: "",
@@ -50,7 +50,7 @@ export const INITIAL_STATE = {
   requiredElements: "",
   restrictions: "",
   duration: "6s",
-  imageSize: "1080p",
+  imageSize: "720p",
 };
 
 export function fileToBase64(file) {

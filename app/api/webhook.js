@@ -1,6 +1,14 @@
 /**
  * Builds the payload from form state + mode.
  */
+function toDurationInt(value) {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Duración de video inválida: ${value}`);
+  }
+  return parsed;
+}
+
 function buildImagePayload(form) {
   return {
     mode: "image",
@@ -37,7 +45,7 @@ function buildVideoPayload(form) {
     video: {
       numberOfOutputs: form.numberOfOutputs,
       aspectRatio: form.aspectRatio,
-      duration: form.referenceImage ? "8s" : form.duration,
+      duration: toDurationInt(form.referenceImage ? "8s" : form.duration),
       resolution: form.imageSize,
       frameRate: 24,
       outputFormat: "video/mp4",
