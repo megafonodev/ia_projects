@@ -13,7 +13,7 @@ import FormFields from "./FormFields";
 import SuccessScreen from "./SuccessScreen";
 
 const MAX_OUTPUTS = 4;
-const VIDEO_MAX_OUTPUTS = 1;
+const VIDEO_MAX_OUTPUTS = 4;
 const REFERENCE_IMAGE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
 export default function EMDForm() {
