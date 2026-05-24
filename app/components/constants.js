@@ -1,6 +1,7 @@
+// Solo ratios con píxeles válidos (÷16) definidos en ASPECT_RATIO_PIXELS.default.
+// "1.91:1" eliminado: no tiene dimensiones compatibles con GPT Image 2.
 export const ASPECT_RATIOS = [
   "1:1",
-  "1.91:1",
   "2:3",
   "3:2",
   "3:4",
@@ -111,7 +112,7 @@ export const INITIAL_STATE = {
   referenceImageName: "",
   numberOfOutputs: 1,
   aspectRatio: "1:1",
-  platform: "",
+  platform: "Instagram",
   audience: "",
   mainMessage: "",
   valueProp: "",
