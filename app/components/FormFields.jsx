@@ -5,14 +5,29 @@ import {
   DURATIONS,
   IMAGE_SIZES,
   VIDEO_ASPECT_RATIOS,
+  ASPECT_RATIO_PIXELS,
+  IMAGE_QUALITY_OPTIONS,
   getAspectRatiosForPlatform,
 } from "./constants";
 
-export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs }) {
+/** Devuelve el tamaño en píxeles ("WIDTHxHEIGHT") para un ratio y plataforma dados. */
+function toPixelSize(ratio, platform) {
+  const platformMap = ASPECT_RATIO_PIXELS[platform];
+  if (platformMap?.[ratio]) return platformMap[ratio];
+  const defaultMap = ASPECT_RATIO_PIXELS.default;
+  if (defaultMap?.[ratio]) return defaultMap[ratio];
+  return ratio; // fallback: devuelve el ratio tal cual
+}
+
+export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs, onPlatformChange }) {
   const availableAspectRatios =
     mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
   const availableDurations =
     mode === "video" && form.referenceImage ? ["8s"] : DURATIONS;
+
+  const pixelSize = mode === "image"
+    ? toPixelSize(form.aspectRatio, form.platform)
+    : null;
 
   return (
     <div key={mode} className="grid gap-6 sm:grid-cols-2">
@@ -54,7 +69,7 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         <Select
           id="platform"
           value={form.platform}
-          onChange={set("platform")}
+          onChange={onPlatformChange ?? set("platform")}
           options={PLATFORMS}
           placeholder="Selecciona una plataforma"
           required
@@ -121,14 +136,41 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         />
       </FieldGroup>
 
-      {/* Aspect ratio */}
-      <FieldGroup label="Proporción de aspecto" htmlFor="aspectRatio" required delay={210}>
+      {/* Aspect ratio — con badge de píxeles en modo imagen */}
+      <FieldGroup
+        label={
+          mode === "image" && pixelSize ? (
+            <span className="flex items-center gap-2">
+              Proporción de aspecto
+              <span className="rounded-md bg-[var(--emd-primary)]/15 px-2 py-0.5 font-mono text-xs text-[var(--emd-primary)]">
+                {pixelSize}
+              </span>
+            </span>
+          ) : (
+            "Proporción de aspecto"
+          )
+        }
+        htmlFor="aspectRatio"
+        required
+        delay={210}
+      >
         <PillSelector
           options={availableAspectRatios}
           value={form.aspectRatio}
           onChange={set("aspectRatio")}
         />
       </FieldGroup>
+
+      {/* Image quality — solo en modo imagen */}
+      {mode === "image" && (
+        <FieldGroup label="Calidad de generación" htmlFor="imageQuality" required delay={225}>
+          <PillSelector
+            options={IMAGE_QUALITY_OPTIONS}
+            value={form.imageQuality}
+            onChange={set("imageQuality")}
+          />
+        </FieldGroup>
+      )}
 
       {/* Audience */}
       <FieldGroup label="Público objetivo" htmlFor="audience" required delay={240}>

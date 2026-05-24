@@ -1,3 +1,22 @@
+import { ASPECT_RATIO_PIXELS } from "../components/constants";
+
+/**
+ * Convierte un ratio (ej. "9:16") a dimensiones en píxeles (ej. "1080x1920")
+ * teniendo en cuenta los tamaños oficiales de cada plataforma.
+ *
+ * Lógica de resolución:
+ *  1. ¿Existe entrada para [plataforma][ratio]? → úsala
+ *  2. ¿No? → usa ASPECT_RATIO_PIXELS.default[ratio]
+ *  3. ¿Tampoco? → devuelve el ratio tal cual (nunca falla)
+ */
+export function toPixelSize(ratio, platform) {
+  const platformMap = ASPECT_RATIO_PIXELS[platform];
+  if (platformMap?.[ratio]) return platformMap[ratio];
+  const defaultMap = ASPECT_RATIO_PIXELS.default;
+  if (defaultMap?.[ratio]) return defaultMap[ratio];
+  return ratio;
+}
+
 /**
  * Builds the payload from form state + mode.
  */
@@ -17,7 +36,8 @@ function buildImagePayload(form) {
     objective: form.objective,
     referenceImage: form.referenceImage,
     numberOfOutputs: form.numberOfOutputs,
-    aspectRatio: form.aspectRatio,
+    aspectRatio: toPixelSize(form.aspectRatio, form.platform),
+    imageQuality: form.imageQuality,
     platform: form.platform,
     audience: form.audience,
     mainMessage: form.mainMessage,

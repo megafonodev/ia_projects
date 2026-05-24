@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import {
   INITIAL_STATE,
   VIDEO_ASPECT_RATIOS,
+  ASPECT_RATIOS,
+  PLATFORM_ASPECT_RATIOS,
   fileToBase64,
   getAspectRatiosForPlatform,
 } from "./constants";
@@ -102,6 +104,27 @@ export default function EMDForm() {
     });
   };
 
+  /**
+   * Gestiona el cambio de plataforma y resetea el ratio si ya no está disponible
+   * en la nueva plataforma seleccionada.
+   */
+  const handlePlatformChange = (e) => {
+    const value = e?.target ? e.target.value : e;
+    setForm((prev) => {
+      if (mode === "video") {
+        const aspectRatio = VIDEO_ASPECT_RATIOS.includes(prev.aspectRatio)
+          ? prev.aspectRatio
+          : VIDEO_ASPECT_RATIOS[0];
+        return { ...prev, platform: value, aspectRatio };
+      }
+      const availableAspectRatios = getAspectRatiosForPlatform(value);
+      const aspectRatio = availableAspectRatios.includes(prev.aspectRatio)
+        ? prev.aspectRatio
+        : availableAspectRatios[0];
+      return { ...prev, platform: value, aspectRatio };
+    });
+  };
+
   const handleFileChange = async (file) => {
     if (file.size > REFERENCE_IMAGE_MAX_SIZE_BYTES) {
       setError("La imagen de referencia no puede superar 20 MB.");
@@ -162,6 +185,7 @@ export default function EMDForm() {
         onFileChange={handleFileChange}
         onClearFile={handleClearFile}
         maxOutputs={getMaxOutputsForMode(mode)}
+        onPlatformChange={handlePlatformChange}
       />
 
       {/* Error */}

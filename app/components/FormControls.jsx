@@ -79,20 +79,24 @@ export function Select({ id, value, onChange, options, placeholder, required }) 
 export function PillSelector({ options, value, onChange }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {options.map((opt) => (
-        <button
-          key={opt}
-          type="button"
-          onClick={() => onChange(opt)}
-          className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer ${
-            value === opt
-              ? "border-[var(--emd-primary)] bg-[var(--emd-primary)]/15 text-[var(--emd-primary)] shadow-[0_0_12px_var(--emd-glow-primary)]"
-              : "border-[var(--emd-border)] bg-[var(--emd-surface)] text-[var(--emd-text-muted)] hover:border-[var(--emd-secondary)]/30 hover:text-[var(--emd-text)]"
-          }`}
-        >
-          {opt}
-        </button>
-      ))}
+      {options.map((opt) => {
+        const optValue = typeof opt === "object" ? opt.value : opt;
+        const optLabel = typeof opt === "object" ? opt.label : opt;
+        return (
+          <button
+            key={optValue}
+            type="button"
+            onClick={() => onChange(optValue)}
+            className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer ${
+              value === optValue
+                ? "border-[var(--emd-primary)] bg-[var(--emd-primary)]/15 text-[var(--emd-primary)] shadow-[0_0_12px_var(--emd-glow-primary)]"
+                : "border-[var(--emd-border)] bg-[var(--emd-surface)] text-[var(--emd-text-muted)] hover:border-[var(--emd-secondary)]/30 hover:text-[var(--emd-text)]"
+            }`}
+          >
+            {optLabel}
+          </button>
+        );
+      })}
     </div>
   );
 }
