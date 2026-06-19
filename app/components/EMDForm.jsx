@@ -49,11 +49,6 @@ export default function EMDForm() {
         changed = true;
       }
 
-      if (mode === "video" && next.referenceImage && next.duration !== "8s") {
-        next.duration = "8s";
-        changed = true;
-      }
-
       return changed ? next : prev;
     });
   }, [mode]);
@@ -69,10 +64,6 @@ export default function EMDForm() {
           ...prev,
           numberOfOutputs: Math.min(maxOutputs, nextValue),
         };
-      }
-
-      if (field === "duration" && mode === "video" && prev.referenceImage) {
-        return { ...prev, duration: "8s" };
       }
 
       if (field === "platform") {
@@ -137,10 +128,6 @@ export default function EMDForm() {
       ...prev,
       referenceImage: base64,
       referenceImageName: file.name,
-      duration:
-        mode === "video"
-          ? "8s"
-          : prev.duration,
     }));
   };
 

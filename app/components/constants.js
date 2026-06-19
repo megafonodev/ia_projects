@@ -12,7 +12,7 @@ export const ASPECT_RATIOS = [
   "16:9",
   "21:9",
 ];
-export const VIDEO_ASPECT_RATIOS = ["16:9", "9:16"];
+export const VIDEO_ASPECT_RATIOS = ["16:9", "9:16", "1:1"];
 export const PLATFORMS = [
   "Instagram",
   "Facebook",
@@ -101,7 +101,7 @@ export function getAspectRatiosForPlatform(platform) {
   return PLATFORM_ASPECT_RATIOS[platform] ?? ASPECT_RATIOS;
 }
 
-export const DURATIONS = ["4s", "6s", "8s"];
+export const DURATIONS = ["2s", "3s", "4s"];
 export const IMAGE_SIZES = ["720p"];
 
 export const INITIAL_STATE = {
@@ -119,7 +119,7 @@ export const INITIAL_STATE = {
   hexColors: "",
   requiredElements: "",
   restrictions: "",
-  duration: "6s",
+  duration: "3s",
   imageSize: "720p",
   imageQuality: "medium",
 };

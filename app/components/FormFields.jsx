@@ -22,8 +22,7 @@ function toPixelSize(ratio, platform) {
 export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs, onPlatformChange }) {
   const availableAspectRatios =
     mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
-  const availableDurations =
-    mode === "video" && form.referenceImage ? ["8s"] : DURATIONS;
+  const availableDurations = DURATIONS;
 
   const pixelSize = mode === "image"
     ? toPixelSize(form.aspectRatio, form.platform)
@@ -94,17 +93,12 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
       {/* Video-only: duration + resolution */}
       {mode === "video" && (
         <>
-          <FieldGroup label="Duración" htmlFor="duration" required delay={140}>
+          <FieldGroup label="Duración por escena" htmlFor="duration" required delay={140}>
             <PillSelector
               options={availableDurations}
               value={form.duration}
               onChange={set("duration")}
             />
-            {form.referenceImage && (
-              <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
-                Con imagen de referencia, la duración se fija en 8s.
-              </p>
-            )}
           </FieldGroup>
 
           <FieldGroup label="Resolución" htmlFor="imageSize" required delay={160}>
@@ -120,21 +114,23 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         </>
       )}
 
-      {/* Number of outputs */}
-      <FieldGroup
-        label={mode === "image" ? "Número de imágenes a generar" : "Número de vídeos a generar"}
-        htmlFor="numberOfOutputs"
-        required
-        delay={180}
-      >
-        <NumberStepper
-          id="numberOfOutputs"
-          value={form.numberOfOutputs}
-          onChange={set("numberOfOutputs")}
-          min={1}
-          max={maxOutputs}
-        />
-      </FieldGroup>
+      {/* Number of outputs — solo modo imagen */}
+      {mode === "image" && (
+        <FieldGroup
+          label="Número de imágenes a generar"
+          htmlFor="numberOfOutputs"
+          required
+          delay={180}
+        >
+          <NumberStepper
+            id="numberOfOutputs"
+            value={form.numberOfOutputs}
+            onChange={set("numberOfOutputs")}
+            min={1}
+            max={maxOutputs}
+          />
+        </FieldGroup>
+      )}
 
       {/* Aspect ratio — con badge de píxeles en modo imagen */}
       <FieldGroup

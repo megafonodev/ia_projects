@@ -63,12 +63,10 @@ function buildVideoPayload(form) {
     restrictions: form.restrictions,
     referenceImage: form.referenceImage,
     video: {
-      numberOfOutputs: form.numberOfOutputs,
       aspectRatio: form.aspectRatio,
-      duration: toDurationInt(form.referenceImage ? "8s" : form.duration),
-      resolution: form.imageSize,
-      frameRate: 24,
-      outputFormat: "video/mp4",
+      sceneDuration: toDurationInt(form.duration),
+      numberOfScenes: 4,
+      generateAudio: true,
     },
   };
 }
