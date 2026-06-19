@@ -103,6 +103,7 @@ export function getAspectRatiosForPlatform(platform) {
 
 export const DURATIONS = ["4s", "6s", "8s"];
 export const IMAGE_SIZES = ["720p"];
+export const SCENE_DURATIONS = ["2s", "4s", "6s", "8s"];
 
 export const INITIAL_STATE = {
   campaignName: "",
@@ -119,8 +120,8 @@ export const INITIAL_STATE = {
   hexColors: "",
   requiredElements: "",
   restrictions: "",
-  duration: "6s",
-  imageSize: "720p",
+  sceneDuration: "4s",
+  generateAudio: true,
   imageQuality: "medium",
 };
 

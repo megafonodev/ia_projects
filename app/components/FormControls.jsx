@@ -101,6 +101,29 @@ export function PillSelector({ options, value, onChange }) {
   );
 }
 
+export function Toggle({ id, value, onChange }) {
+  return (
+    <button
+      id={id}
+      type="button"
+      onClick={() => onChange(!value)}
+      className={`relative inline-flex h-7 w-12 cursor-pointer items-center rounded-full border-2 transition-all duration-200 ${
+        value
+          ? "border-[var(--emd-primary)] bg-[var(--emd-primary)]/20"
+          : "border-[var(--emd-border)] bg-[var(--emd-surface)]"
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 rounded-full transition-all duration-200 ${
+          value
+            ? "translate-x-6 bg-[var(--emd-primary)]"
+            : "translate-x-1 bg-[var(--emd-text-muted)]"
+        }`}
+      />
+    </button>
+  );
+}
+
 export function NumberStepper({ id, value, onChange, min = 1, max = 10 }) {
   return (
     <div className="flex items-center gap-3">

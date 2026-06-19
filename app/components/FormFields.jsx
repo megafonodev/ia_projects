@@ -1,9 +1,8 @@
-import { FieldGroup, TextInput, TextArea, Select, PillSelector, NumberStepper } from "./FormControls";
+import { FieldGroup, TextInput, TextArea, Select, PillSelector, NumberStepper, Toggle } from "./FormControls";
 import FileUpload from "./FileUpload";
 import {
   PLATFORMS,
-  DURATIONS,
-  IMAGE_SIZES,
+  SCENE_DURATIONS,
   VIDEO_ASPECT_RATIOS,
   ASPECT_RATIO_PIXELS,
   IMAGE_QUALITY_OPTIONS,
@@ -22,9 +21,6 @@ function toPixelSize(ratio, platform) {
 export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs, onPlatformChange }) {
   const availableAspectRatios =
     mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
-  const availableDurations =
-    mode === "video" && form.referenceImage ? ["8s"] : DURATIONS;
-
   const pixelSize = mode === "image"
     ? toPixelSize(form.aspectRatio, form.platform)
     : null;
@@ -91,50 +87,44 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         </FieldGroup>
       </div>
 
-      {/* Video-only: duration + resolution */}
+      {/* Video-only: scene duration + audio */}
       {mode === "video" && (
         <>
-          <FieldGroup label="Duración" htmlFor="duration" required delay={140}>
+          <FieldGroup label="Duración por escena" htmlFor="sceneDuration" required delay={140}>
             <PillSelector
-              options={availableDurations}
-              value={form.duration}
-              onChange={set("duration")}
+              options={SCENE_DURATIONS}
+              value={form.sceneDuration}
+              onChange={set("sceneDuration")}
             />
-            {form.referenceImage && (
-              <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
-                Con imagen de referencia, la duración se fija en 8s.
-              </p>
-            )}
           </FieldGroup>
 
-          <FieldGroup label="Resolución" htmlFor="imageSize" required delay={160}>
-            <PillSelector
-              options={IMAGE_SIZES}
-              value={form.imageSize}
-              onChange={set("imageSize")}
+          <FieldGroup label="Audio generado por IA" htmlFor="generateAudio" delay={160}>
+            <Toggle
+              id="generateAudio"
+              value={form.generateAudio}
+              onChange={set("generateAudio")}
             />
-            <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
-              Velocidad nativa: 24 FPS. Formato de salida: video/mp4.
-            </p>
           </FieldGroup>
         </>
       )}
 
-      {/* Number of outputs */}
-      <FieldGroup
-        label={mode === "image" ? "Número de imágenes a generar" : "Número de vídeos a generar"}
-        htmlFor="numberOfOutputs"
-        required
-        delay={180}
-      >
-        <NumberStepper
-          id="numberOfOutputs"
-          value={form.numberOfOutputs}
-          onChange={set("numberOfOutputs")}
-          min={1}
-          max={maxOutputs}
-        />
-      </FieldGroup>
+      {/* Number of outputs — solo modo imagen */}
+      {mode === "image" && (
+        <FieldGroup
+          label="Número de imágenes a generar"
+          htmlFor="numberOfOutputs"
+          required
+          delay={180}
+        >
+          <NumberStepper
+            id="numberOfOutputs"
+            value={form.numberOfOutputs}
+            onChange={set("numberOfOutputs")}
+            min={1}
+            max={maxOutputs}
+          />
+        </FieldGroup>
+      )}
 
       {/* Aspect ratio — con badge de píxeles en modo imagen */}
       <FieldGroup
