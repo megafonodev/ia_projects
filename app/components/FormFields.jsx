@@ -1,4 +1,4 @@
-import { FieldGroup, TextInput, TextArea, Select, PillSelector } from "./FormControls";
+import { FieldGroup, TextInput, TextArea, Select, PillSelector, NumberStepper } from "./FormControls";
 import FileUpload from "./FileUpload";
 import {
   PLATFORMS,
@@ -6,6 +6,7 @@ import {
   IMAGE_SIZES,
   VIDEO_ASPECT_RATIOS,
   ASPECT_RATIO_PIXELS,
+  IMAGE_QUALITY_OPTIONS,
   getAspectRatiosForPlatform,
 } from "./constants";
 
@@ -18,10 +19,11 @@ function toPixelSize(ratio, platform) {
   return ratio; // fallback: devuelve el ratio tal cual
 }
 
-export default function FormFields({ mode, form, set, onFileChange, onClearFile, onPlatformChange }) {
+export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs, onPlatformChange }) {
   const availableAspectRatios =
     mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
-  const availableDurations = DURATIONS;
+  const availableDurations =
+    mode === "video" && form.referenceImage ? ["8s"] : DURATIONS;
 
   const pixelSize = mode === "image"
     ? toPixelSize(form.aspectRatio, form.platform)
@@ -92,12 +94,17 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
       {/* Video-only: duration + resolution */}
       {mode === "video" && (
         <>
-          <FieldGroup label="Duración por escena" htmlFor="duration" required delay={140}>
+          <FieldGroup label="Duración" htmlFor="duration" required delay={140}>
             <PillSelector
               options={availableDurations}
               value={form.duration}
               onChange={set("duration")}
             />
+            {form.referenceImage && (
+              <p className="mt-2 text-xs text-[var(--emd-text-muted)]/80">
+                Con imagen de referencia, la duración se fija en 8s.
+              </p>
+            )}
           </FieldGroup>
 
           <FieldGroup label="Resolución" htmlFor="imageSize" required delay={160}>
@@ -113,6 +120,21 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         </>
       )}
 
+      {/* Number of outputs */}
+      <FieldGroup
+        label={mode === "image" ? "Número de imágenes a generar" : "Número de vídeos a generar"}
+        htmlFor="numberOfOutputs"
+        required
+        delay={180}
+      >
+        <NumberStepper
+          id="numberOfOutputs"
+          value={form.numberOfOutputs}
+          onChange={set("numberOfOutputs")}
+          min={1}
+          max={maxOutputs}
+        />
+      </FieldGroup>
 
       {/* Aspect ratio — con badge de píxeles en modo imagen */}
       <FieldGroup
@@ -139,6 +161,16 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         />
       </FieldGroup>
 
+      {/* Image quality — solo en modo imagen */}
+      {mode === "image" && (
+        <FieldGroup label="Calidad de generación" htmlFor="imageQuality" required delay={225}>
+          <PillSelector
+            options={IMAGE_QUALITY_OPTIONS}
+            value={form.imageQuality}
+            onChange={set("imageQuality")}
+          />
+        </FieldGroup>
+      )}
 
       {/* Audience */}
       <FieldGroup label="Público objetivo" htmlFor="audience" required delay={240}>

@@ -14,6 +14,8 @@ import ModeToggle from "./ModeToggle";
 import FormFields from "./FormFields";
 import SuccessScreen from "./SuccessScreen";
 
+const MAX_OUTPUTS = 4;
+const VIDEO_MAX_OUTPUTS = 4;
 const REFERENCE_IMAGE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
 export default function EMDForm() {
@@ -23,10 +25,19 @@ export default function EMDForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
+  const getMaxOutputsForMode = (currentMode) =>
+    currentMode === "video" ? VIDEO_MAX_OUTPUTS : MAX_OUTPUTS;
+
   useEffect(() => {
     setForm((prev) => {
       const next = { ...prev };
       let changed = false;
+
+      const maxOutputs = getMaxOutputsForMode(mode);
+      if (next.numberOfOutputs > maxOutputs) {
+        next.numberOfOutputs = maxOutputs;
+        changed = true;
+      }
 
       const validAspectRatios =
         mode === "video"
@@ -38,6 +49,11 @@ export default function EMDForm() {
         changed = true;
       }
 
+      if (mode === "video" && next.referenceImage && next.duration !== "8s") {
+        next.duration = "8s";
+        changed = true;
+      }
+
       return changed ? next : prev;
     });
   }, [mode]);
@@ -45,6 +61,20 @@ export default function EMDForm() {
   const set = (field) => (e) => {
     const value = e?.target ? e.target.value : e;
     setForm((prev) => {
+      if (field === "numberOfOutputs") {
+        const nextValue = Number(value);
+        if (Number.isNaN(nextValue)) return prev;
+        const maxOutputs = getMaxOutputsForMode(mode);
+        return {
+          ...prev,
+          numberOfOutputs: Math.min(maxOutputs, nextValue),
+        };
+      }
+
+      if (field === "duration" && mode === "video" && prev.referenceImage) {
+        return { ...prev, duration: "8s" };
+      }
+
       if (field === "platform") {
         if (mode === "video") {
           const aspectRatio = VIDEO_ASPECT_RATIOS.includes(prev.aspectRatio)
@@ -107,6 +137,10 @@ export default function EMDForm() {
       ...prev,
       referenceImage: base64,
       referenceImageName: file.name,
+      duration:
+        mode === "video"
+          ? "8s"
+          : prev.duration,
     }));
   };
 
@@ -150,6 +184,7 @@ export default function EMDForm() {
         set={set}
         onFileChange={handleFileChange}
         onClearFile={handleClearFile}
+        maxOutputs={getMaxOutputsForMode(mode)}
         onPlatformChange={handlePlatformChange}
       />
 

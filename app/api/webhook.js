@@ -35,8 +35,9 @@ function buildImagePayload(form) {
     product: form.product,
     objective: form.objective,
     referenceImage: form.referenceImage,
-    numberOfOutputs: 2,
+    numberOfOutputs: form.numberOfOutputs,
     aspectRatio: toPixelSize(form.aspectRatio, form.platform),
+    imageQuality: form.imageQuality,
     platform: form.platform,
     audience: form.audience,
     mainMessage: form.mainMessage,
@@ -62,10 +63,12 @@ function buildVideoPayload(form) {
     restrictions: form.restrictions,
     referenceImage: form.referenceImage,
     video: {
+      numberOfOutputs: form.numberOfOutputs,
       aspectRatio: form.aspectRatio,
-      sceneDuration: toDurationInt(form.duration),
-      numberOfScenes: 4,
-      generateAudio: true,
+      duration: toDurationInt(form.referenceImage ? "8s" : form.duration),
+      resolution: form.imageSize,
+      frameRate: 24,
+      outputFormat: "video/mp4",
     },
   };
 }
