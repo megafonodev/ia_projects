@@ -1,4 +1,4 @@
-import { FieldGroup, TextInput, TextArea, Select, PillSelector, NumberStepper } from "./FormControls";
+import { FieldGroup, TextInput, TextArea, Select, PillSelector } from "./FormControls";
 import FileUpload from "./FileUpload";
 import {
   PLATFORMS,
@@ -6,7 +6,6 @@ import {
   IMAGE_SIZES,
   VIDEO_ASPECT_RATIOS,
   ASPECT_RATIO_PIXELS,
-  IMAGE_QUALITY_OPTIONS,
   getAspectRatiosForPlatform,
 } from "./constants";
 
@@ -19,7 +18,7 @@ function toPixelSize(ratio, platform) {
   return ratio; // fallback: devuelve el ratio tal cual
 }
 
-export default function FormFields({ mode, form, set, onFileChange, onClearFile, maxOutputs, onPlatformChange }) {
+export default function FormFields({ mode, form, set, onFileChange, onClearFile, onPlatformChange }) {
   const availableAspectRatios =
     mode === "video" ? VIDEO_ASPECT_RATIOS : getAspectRatiosForPlatform(form.platform);
   const availableDurations = DURATIONS;
@@ -114,23 +113,6 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         </>
       )}
 
-      {/* Number of outputs — solo modo imagen */}
-      {mode === "image" && (
-        <FieldGroup
-          label="Número de imágenes a generar"
-          htmlFor="numberOfOutputs"
-          required
-          delay={180}
-        >
-          <NumberStepper
-            id="numberOfOutputs"
-            value={form.numberOfOutputs}
-            onChange={set("numberOfOutputs")}
-            min={1}
-            max={maxOutputs}
-          />
-        </FieldGroup>
-      )}
 
       {/* Aspect ratio — con badge de píxeles en modo imagen */}
       <FieldGroup
@@ -157,16 +139,6 @@ export default function FormFields({ mode, form, set, onFileChange, onClearFile,
         />
       </FieldGroup>
 
-      {/* Image quality — solo en modo imagen */}
-      {mode === "image" && (
-        <FieldGroup label="Calidad de generación" htmlFor="imageQuality" required delay={225}>
-          <PillSelector
-            options={IMAGE_QUALITY_OPTIONS}
-            value={form.imageQuality}
-            onChange={set("imageQuality")}
-          />
-        </FieldGroup>
-      )}
 
       {/* Audience */}
       <FieldGroup label="Público objetivo" htmlFor="audience" required delay={240}>
